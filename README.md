@@ -14,6 +14,9 @@ javac bestandsmeldung.java
 java -classpath /path/to/h2-1.4.199.jar:. bestandsmeldung
 ```
 Unter Windows wird statt dem Doppelpunkt im Classpath wahrscheinlich ein Semikolon benötigt.
+
+Der die benötigte h2 library ist Teil von Hibiscus und liegt in dessen 'lib'-Verzeichnis.
+
 Optional kann ein Stichtag-Datum als Parameter mit übergeben werden. Ansonsten wird der 1. Januar des gerade aktuellen Jahres als Stichtag verwendet.
 ```bash
 java -classpath /path/to/h2-1.4.199.jar:. bestandsmeldung 01.01.2020
@@ -21,10 +24,10 @@ java -classpath /path/to/h2-1.4.199.jar:. bestandsmeldung 01.01.2020
 
 ## Hinweise
 - Berücksichtigt nur die Meldung zu den Verbandsnummern. Keine Aufsplittung in die Untergruppen.
-- Es muss eine Eigenschaftengruppe mit den zu meldenden Sportarten geben.
+- Es muss eine Eigenschaftengruppe 'Sportart' mit den zu meldenden Sportarten geben.
 - Verbandsnummern müssen in eckigen Klammern [] als Teil der Bezeichung der Sportart stehen.
 - Alle Mitglieder werden als "aktiv" gemeldet. Keine passiven Mitglieder.
-- Der Pfad zur JVerein-Datenbank ist aktuell hart codiert.
+- Der Pfad zur JVerein-Datenbank ist hart codiert.
 
 ## Beispiel Eigenschaft mit Gruppe
 ```bash
@@ -34,5 +37,5 @@ Ski alpin [73]     | Sportart
 Radsport [59]      | Sportart
 ```
 
-# License
+## License
 [GPLv3](https://www.gnu.org/licenses/)
