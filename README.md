@@ -1,4 +1,4 @@
-# jverein-bestandsmeldung
+# Bestandsmeldung Sportbund aus JVerein
 
 Dieses kleine Java-Programm ermöglicht es, eine Bestandsmeldung an den Landessportbund aus der OpenSource Vereinsverwaltung [JVerein](https://www.jverein.de/) zu erstellen. Getestet wurde das Programm mit einem kleineren Verein (ca. 200 Mitglieder) und zwei Sportarten und einer Meldung an den [Württembergischen Landessportbund](https://www.wlsb.de/).
 
@@ -13,6 +13,7 @@ javac bestandsmeldung.java
 ```bash
 java -classpath /path/to/h2-1.4.199.jar:. bestandsmeldung
 ```
+Unter Windows wird statt dem Doppelpunkt im Classpath wahrscheinlich ein Semikolon benötigt.
 Optional kann ein Stichtag-Datum als Parameter mit übergeben werden. Ansonsten wird der 1. Januar des gerade aktuellen Jahres als Stichtag verwendet.
 ```bash
 java -classpath /path/to/h2-1.4.199.jar:. bestandsmeldung 01.01.2020
