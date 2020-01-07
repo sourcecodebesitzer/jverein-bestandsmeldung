@@ -15,18 +15,6 @@
  * Copyright (c) 2020 Stefan Bitzer
  */
 
-/*
- * Hinweise:
- * - Berücksichtigt nur die Meldung zu den Verbandsnummern. Keine Aufsplittung in die Untergruppen.
- * - Es muss eine Eigenschaftengruppe mit den zu meldenden Sportarten geben.
- * - Verbandsnummern müssen in eckigen Klammern [] als Teil der Bezeichung der Sportart stehen.
- * - Alle Mitglieder werden als "aktiv" gemeldet. Keine passiven Mitglieder.
- * - Die Datenbank wird im selben Ordner erwartet oder muss konfiguriert werden.
- *
- * Schnittstellenspezifikation des DOSB:
- * https://cdn.dosb.de/user_upload/www.dosb.de/LandingPage/Service-Medien/schnitt/lsb_schnitt.pdf
- */
-
 // TODO: von Kommandozeile einlesen: Vereinsnummer, Eigenschaftgruppe, Speicherort Datenbank
 
 import java.sql.Connection;
@@ -90,11 +78,11 @@ public class bestandsmeldung {
 
 		// get Eigenschaftenbezeichung from DB
 		Hashtable<Integer, Integer> hashtableIdVerband = new Hashtable<>();
-		System.out.println("Folgende Eigenschaften aus der Eigenschaftgruppe '" + EIGENSCHAFTENGRUPPE_SPORTART + "' werden verwendet und der Verbandsnummer zugeordnet:");
+		System.out.println("Folgende Eigenschaften aus der Eigenschaftgruppe '" + EIGENSCHAFTENGRUPPE_SPORTART + "' werden verwendet und der Fachverbandsnummer zugeordnet:");
 		Statement statement = connection.createStatement();
 		ResultSet resultset = statement.executeQuery("SELECT EIGENSCHAFT.ID, EIGENSCHAFT.BEZEICHNUNG FROM EIGENSCHAFT INNER JOIN EIGENSCHAFTGRUPPE ON EIGENSCHAFT.EIGENSCHAFTGRUPPE = EIGENSCHAFTGRUPPE.ID WHERE EIGENSCHAFTGRUPPE.BEZEICHNUNG = '" + EIGENSCHAFTENGRUPPE_SPORTART + "' ORDER BY EIGENSCHAFT.ID;");
 		while(resultset.next()) {
-			// hole Verbandsnummer aus der Bezeichung. Muss innerhalb der Klammern stehen.
+			// hole Fachverbandsnummer aus der Bezeichung. Muss innerhalb der Klammern stehen.
 			int openBracket = resultset.getString("BEZEICHNUNG").indexOf('[');
 			int closingBracket = resultset.getString("BEZEICHNUNG").indexOf(']');
 
@@ -113,7 +101,7 @@ public class bestandsmeldung {
 		statement.close();
 
 		if(hashtableIdVerband.size() == 0) {
-			System.err.println("!!! FEHLER: Keine Eigenschaften in der Eigenschaftgruppe '" + EIGENSCHAFTENGRUPPE_SPORTART + "' gefunden. Gruppe nicht angelegt? Die Bezeichung der Eigenschaften muss auch die Verbandsnummer in eckigen Klammern [] enthalten. Beispiel:");
+			System.err.println("!!! FEHLER: Keine Eigenschaften in der Eigenschaftgruppe '" + EIGENSCHAFTENGRUPPE_SPORTART + "' gefunden. Gruppe nicht angelegt? Die Bezeichung der Eigenschaften muss auch die Fachverbandsnummer in eckigen Klammern [] enthalten. Beispiel:");
 			System.err.println("Bezeichnung:       | Gruppe:");
 			System.err.println("--------------------------------");
 			System.err.println("Ski alpin [73]     | Sportart");
@@ -199,16 +187,16 @@ public class bestandsmeldung {
 				hashtableMitgliedSportart = new Hashtable<>();
 			}
 
-			// nächster Jahrgang kommt daran oder letzter Datensatz, deshalb noch zuvor die Daten ausgeben für Verbandsnummer und die A-Meldung
+			// nächster Jahrgang kommt daran oder letzter Datensatz, deshalb noch zuvor die Daten ausgeben
 			if (resultset.isLast() || (lastRunJahrgang != 0 && lastRunJahrgang != Integer.parseInt(resultset.getString("GEBURTSDATUM").substring(0, 4)))) {
 				Hashtable<Integer, Integer> verbandsnummerDone = new Hashtable<>();
 
-				// B-Meldungen für Verbandsnummer des letzten Jahrgangs
+				// B-Meldungen für Fachverbandsnummer des letzten Jahrgangs
 				itr = hashtableIdVerband.keySet().iterator();
 				while(itr.hasNext()) {
 					Integer key = itr.next();
 
-					// nur ausgeben, wenn diese Verbandsnummer noch nicht ausgegeben wurde
+					// nur ausgeben, wenn diese Fachverbandsnummer noch nicht ausgegeben wurde
 					int thisVerbandsnummerDone = 0;
 					try {
 						thisVerbandsnummerDone = verbandsnummerDone.get(hashtableIdVerband.get(key));
@@ -232,7 +220,7 @@ public class bestandsmeldung {
 							printstream.print(VEREINSNUMMER);	// Vereinsnummer
 							printstream.print("        ");	// Schlüssel1 (leer)
 							printstream.print("        ");	// Schlüssel2 (leer)
-							printstream.print(String.format("%04d", hashtableIdVerband.get(key)));	// Skz1 - Verbandsnummer
+							printstream.print(String.format("%04d", hashtableIdVerband.get(key)));	// Skz1 - Fachverbandsnummer
 							printstream.print(String.format("%04d", 0));	// Skz2 - Sportartennummer
 							printstream.print(String.format("%04d", lastRunJahrgang));	// Jahrgang
 							printstream.print(String.format("%08d", valueMaennlich));	// Maennlich_aktiv
@@ -253,7 +241,7 @@ public class bestandsmeldung {
 				printstream.print(VEREINSNUMMER);	// Vereinsnummer
 				printstream.print("        ");	// Schlüssel1 (leer)
 				printstream.print("        ");	// Schlüssel2 (leer)
-				printstream.print(String.format("%04d", 0));	// Skz1 - Verbandsnummer
+				printstream.print(String.format("%04d", 0));	// Skz1 - Fachverbandsnummer
 				printstream.print(String.format("%04d", 0));	// Skz2 - Sportartennummer
 				printstream.print(String.format("%04d", lastRunJahrgang));	// Jahrgang
 				printstream.print(String.format("%08d", ameldung_m_aktiv));	// Maennlich_aktiv
@@ -270,7 +258,7 @@ public class bestandsmeldung {
 				ameldung_w_aktiv = 0;
 			}
 
-			// Zähler erhöhen für konkrete Verbandsnummer (aktueller Durchlauf)
+			// Zähler erhöhen für konkrete Fachverbandsnummer (aktueller Durchlauf)
 			if(resultset.getString("EIGENSCHAFT") != null) {
 				hashtableMitgliedSportart.put(hashtableIdVerband.get(Integer.parseInt(resultset.getString("EIGENSCHAFT"))), 1);
 			}
