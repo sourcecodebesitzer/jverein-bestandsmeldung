@@ -8,6 +8,7 @@ Dabei wird eine Austauschdatei entsprechend der [Schnittstellenspezifikation des
 Als Quelle für die Daten wird die H2-Datenbank von JVerein verwendet. Es werden alle Mitglieder, die nicht oder am Stichtag noch nicht ausgetreten sind, berücksichtigt. D.h. alle Mitglieder, bei denen kein Austrittdatum oder ein Austrittsdatum in der Zukunft eingetragen ist, werden berücksichtigt.
 
 Der an den Landesverband zu meldende Fachverband wird in einer Eigenschaftengruppe direkt in JVerein verwaltet. D.h. es muss eine entsprechende Eigenschaftengruppe "Sportart" angelegt und dazu dann Eigenschaften erstellt werden. Diese Eigenschaften müssen direkt die Nummer des Fachverbands entsprechend der [Verbandsdefinition](https://cdn.dosb.de/user_upload/www.dosb.de/LandingPage/Service-Medien/schnitt/lsb_kodierung_Version_2019.pdf) enthalten. Die konkreten Sportarten werden aktuell nicht in die automatische Meldung mit aufgenommen, sondern nur der jeweilige Fachverband gemeldet.
+Beim jeweiligen Mitglied wird dann die Sportart, in der es aktiv ist, angehakt.
 
 ## Beispiel Eigenschaften der Gruppe Sportart in JVerein
 ```
@@ -39,7 +40,8 @@ java -classpath /path/to/h2-1.4.199.jar;. bestandsmeldung 01.01.2020
 - Berücksichtigt nur die Meldung zu den Fachverbänden. Keine Aufsplittung in die Sportarten.
 - Es muss eine Eigenschaftengruppe 'Sportart' mit den zu meldenden Sportarten geben.
 - Die Fachverbandsnummern müssen in eckigen Klammern [] als Teil der Bezeichung der Sportart stehen.
-- Alle Mitglieder werden als "aktiv" gemeldet. Keine passiven Mitglieder.
+- Jedem Mitglied muss eine Sportart in JVerein zugewiesen sein. Also mindestens eine der Eigenschaften angehakt sein.
+- Alle Mitglieder werden als aktiv gemeldet. Passive Mitglieder sind aktuell in diesem Tool nicht vorgesehen.
 - Der Pfad zur JVerein-Datenbank ist hart codiert.
 - Die Ausgabe erfolgt ins aktuelle Verzeichnis. Es wird entsprechend der Spezifikation die Datei 'ja.dat' erstellt.
 
