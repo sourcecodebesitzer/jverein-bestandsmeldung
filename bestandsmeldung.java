@@ -139,19 +139,22 @@ public class bestandsmeldung {
 		int ameldung_m_aktiv = 0;
 		int ameldung_w_aktiv = 0;
 		int gesamtzahlMitglieder = 0;
+		int onceAgain = 1;	// nochmal durchlaufen nach letztem Datensatz
 
 		Hashtable<Integer, Integer> hashtableMitgliedSportart = new Hashtable<>();
 		Hashtable<Integer, Integer> hashtableMitgliederSportartMaennlich = new Hashtable<>();
 		Hashtable<Integer, Integer> hashtableMitgliederSportartWeiblich = new Hashtable<>();
 
-		while (resultset.next()) {
-			// Bei mindestens einem Mitglied ist keine Sportart in den Eigenschaften zugewiesen --> Fehler ausgeben und abbrechen
-			if (resultset.getString("EIGENSCHAFT") == null) {
-				System.err.println("!!! FEHLER: Mitglied ohne mindestens eine der abgefragten Eigenschaften. Mitglieds-ID: " + resultset.getString("ID"));
+		while (resultset.next() || onceAgain-- > 0) {
+			if(onceAgain > 0) {
+				// Bei mindestens einem Mitglied ist keine Sportart in den Eigenschaften zugewiesen --> Fehler ausgeben und abbrechen
+				if (resultset.getString("EIGENSCHAFT") == null) {
+					System.err.println("!!! FEHLER: Mitglied ohne mindestens eine der abgefragten Eigenschaften. Mitglieds-ID: " + resultset.getString("ID"));
+				}
 			}
 
 			// nächstes Mitglied oder letzter Datensatz, also Zähler übernehmen
-			if (resultset.isLast() || (lastRunMitgliedId != 0 && lastRunMitgliedId != Integer.parseInt(resultset.getString("ID")))) {
+			if (onceAgain == 0 || (lastRunMitgliedId != 0 && lastRunMitgliedId != Integer.parseInt(resultset.getString("ID")))) {
 				if(lastRunGeschlecht.equals("m")) {	// männlich
 					ameldung_m_aktiv++;
 
@@ -187,8 +190,8 @@ public class bestandsmeldung {
 				hashtableMitgliedSportart = new Hashtable<>();
 			}
 
-			// nächster Jahrgang kommt daran oder letzter Datensatz, deshalb noch zuvor die Daten ausgeben
-			if (resultset.isLast() || (lastRunJahrgang != 0 && lastRunJahrgang != Integer.parseInt(resultset.getString("GEBURTSDATUM").substring(0, 4)))) {
+			// nächster Jahrgang kommt daran oder letzter Datensatz, deshalb noch zuvor die Daten ausgeben für Verbandsnummer und die A-Meldung
+			if (onceAgain == 0 || (lastRunJahrgang != 0 && lastRunJahrgang != Integer.parseInt(resultset.getString("GEBURTSDATUM").substring(0, 4)))) {
 				Hashtable<Integer, Integer> verbandsnummerDone = new Hashtable<>();
 
 				// B-Meldungen für Fachverbandsnummer des letzten Jahrgangs
@@ -258,15 +261,17 @@ public class bestandsmeldung {
 				ameldung_w_aktiv = 0;
 			}
 
-			// Zähler erhöhen für konkrete Fachverbandsnummer (aktueller Durchlauf)
-			if(resultset.getString("EIGENSCHAFT") != null) {
-				hashtableMitgliedSportart.put(hashtableIdVerband.get(Integer.parseInt(resultset.getString("EIGENSCHAFT"))), 1);
-			}
+			if(onceAgain > 0) {
+				// Zähler erhöhen für konkrete Verbandsnummer (aktueller Durchlauf)
+				if(resultset.getString("EIGENSCHAFT") != null) {
+					hashtableMitgliedSportart.put(hashtableIdVerband.get(Integer.parseInt(resultset.getString("EIGENSCHAFT"))), 1);
+				}
 
-			// vorbereiten für nächsten Durchlauf
-			lastRunJahrgang = Integer.parseInt(resultset.getString("GEBURTSDATUM").substring(0, 4));
-			lastRunMitgliedId = Integer.parseInt(resultset.getString("ID"));
-			lastRunGeschlecht = resultset.getString("GESCHLECHT");
+				// vorbereiten für nächsten Durchlauf
+				lastRunJahrgang = Integer.parseInt(resultset.getString("GEBURTSDATUM").substring(0, 4));
+				lastRunMitgliedId = Integer.parseInt(resultset.getString("ID"));
+				lastRunGeschlecht = resultset.getString("GESCHLECHT");
+			}
 		}
 
 		System.out.println("Gesamtzahl Miglieder in dieser Meldung: " + gesamtzahlMitglieder);
